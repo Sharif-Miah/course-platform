@@ -30,10 +30,9 @@ const moduleSchema = new Schema<IModule>({
         required: true,
         type: String,
     },
-    lessonIds: {
-        required: true,
-        type: [String],
-    },
+    lessonIds: [
+        { type: Schema.Types.ObjectId, ref: "Lesson" }
+    ],
 });
 
 export const Module: Model<IModule> = mongoose.models.Module ?? mongoose.model<IModule>("Module", moduleSchema);
