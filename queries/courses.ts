@@ -4,10 +4,11 @@ import { User } from "@/model/user-model";
 import { Testimonial } from "@/model/testimonial-model";
 import { Module } from "@/model/module.model";
 import { dbConnect } from "@/service/mongo";
+import { replaceMongoIdInArray } from "@/lib/convertData";
 
-export async function getCourses() {
+export async function getCourseList() {
     await dbConnect();
-    const courses = await Course.find({}).populate({
+    const courses = await Course.find({}).select(["title", "subtitle", "thumbnail", "modules", "price", "category", "instructor", "description"]).populate({
         path: "category",
         model: Category
     }).populate({
@@ -19,6 +20,6 @@ export async function getCourses() {
     }).populate({
         path: "modules",
         model: Module
-    });
-    return courses;
+    }).lean();
+    return replaceMongoIdInArray(courses as any);
 }

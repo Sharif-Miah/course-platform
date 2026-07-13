@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { Inter, Poppins } from "next/font/google";
 import { dbConnect } from "@/service/mongo";
 import React from "react";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const inter = Inter({ subsets: ['latin'] })
 const poppins = Poppins({ subsets: ['latin'], variable: "--font-poppins", weight: ['400', '500', '600', '700', '800', '900'] })
@@ -24,11 +25,18 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       suppressHydrationWarning
     >
       <body className="min-h-full container mx-auto flex flex-col">
-        <nav>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          <nav>
 
-        </nav>
-        {children}
-        <Toaster richColors position="top-center" />
+          </nav>
+          {children}
+          <Toaster richColors position="top-center" />
+        </ThemeProvider>
       </body>
     </html>
   );

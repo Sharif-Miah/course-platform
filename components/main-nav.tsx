@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 import { MobileNav } from "@/components/mobile-nav";
 import { Logo } from "./logo";
-import { X, Menu } from "lucide-react";
+import { X, Menu, Sun, Moon } from "lucide-react";
 import { Button, buttonVariants } from "./ui/button";
 import {
     DropdownMenu,
@@ -29,6 +30,12 @@ interface MainNavProps {
 
 export function MainNav({ items, children }: MainNavProps) {
     const [showMobileMenu, setShowMobileMenu] = useState(false);
+    const { theme, setTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     return (
         <>
@@ -76,6 +83,21 @@ export function MainNav({ items, children }: MainNavProps) {
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                    className="h-9 w-9 rounded-md cursor-pointer"
+                    aria-label="Toggle theme"
+                >
+                    {!mounted ? (
+                        <div className="h-5 w-5" />
+                    ) : theme === "dark" ? (
+                        <Sun className="h-5 w-5 text-yellow-500" />
+                    ) : (
+                        <Moon className="h-5 w-5 text-slate-700" />
+                    )}
+                </Button>
                 <DropdownMenu>
                     <DropdownMenuTrigger nativeButton={false} render={<div className="cursor-pointer" />}>
                         <Avatar>
