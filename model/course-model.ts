@@ -2,6 +2,7 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface ICourse extends Document {
     title: string;
+    subtitle: string;
     description: string;
     thumbnail: string;
     modules: mongoose.Types.ObjectId[];
@@ -9,51 +10,63 @@ export interface ICourse extends Document {
     active: boolean;
     category?: mongoose.Types.ObjectId;
     instructor?: mongoose.Types.ObjectId;
-    quizzes?: mongoose.Types.ObjectId;
+    quizSet?: mongoose.Types.ObjectId;
     testimonials: mongoose.Types.ObjectId[];
+    learning: string[];
+    createdOn: Date;
+    modifiedOn: Date;
 }
 
 const courseSchema = new Schema<ICourse>({
     title: {
         required: true,
-        type: String,
+        type: String
+    },
+    subtitle: {
+        required: true,
+        type: String
     },
     description: {
         required: true,
-        type: String,
+        type: String
     },
     thumbnail: {
         required: true,
-        type: String,
+        type: String
     },
-    modules: [
-        { type: Schema.Types.ObjectId, ref: "Module" }
-    ],
+    modules: [{ type: Schema.ObjectId, ref: "Module" }],
+
     price: {
         required: true,
-        type: Number,
+        type: Number
     },
     active: {
         required: true,
-        type: Boolean,
+        type: Boolean
     },
 
-    category: {
-        type: Schema.Types.ObjectId, ref: "Category"
+    category: { type: Schema.ObjectId, ref: "Category" },
+
+    instructor: { type: Schema.ObjectId, ref: "User" },
+
+    quizSet: { type: Schema.ObjectId, ref: "Quizset" },
+
+    testimonials: [{ type: Schema.ObjectId, ref: "Testimonial" }],
+
+    learning: {
+        required: true,
+        type: [String]
     },
 
-    instructor: {
-        type: Schema.Types.ObjectId, ref: "User"
+    createdOn: {
+        required: true,
+        type: Date
     },
 
-    quizzes: {
-        required: false,
-        type: Schema.Types.ObjectId,
-    },
-
-    testimonials: [{
-        type: Schema.Types.ObjectId, ref: "Testimonial"
-    }],
+    modifiedOn: {
+        required: true,
+        type: Date
+    }
 });
 
 export const Course: Model<ICourse> =
