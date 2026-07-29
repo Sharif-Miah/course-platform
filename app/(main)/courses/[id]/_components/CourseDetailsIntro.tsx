@@ -47,11 +47,11 @@ const CourseDetailsIntro = ({ title, subtitle, thumbnail }: CourseDetailsIntroPr
                         <div className="relative mx-auto">
                             <div className="lg:max-w-3xl lg:mx-auto">
                                 <Image
-                                    className="w-full rounded-lg"
+                                    className="w-full h-auto rounded-lg"
                                     width={768}
                                     height={463}
-                                    src="/assets/images/courses/course_1.png"
-                                    alt=""
+                                    src={thumbnail || ""}
+                                    alt={title || ""}
                                 />
                             </div>
                         </div>

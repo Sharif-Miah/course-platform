@@ -33,21 +33,21 @@ const testimonials = [
 const SingleCoursePage = async ({ params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params;
     const course = await getCourseDetails(id);
-    console.log(course);
+    console.log(course?.testimonials);
     return (
         <>
             <div className="overflow-x-hidden  grainy">
                 <CourseDetailsIntro
-                    title="Reactive Accelerator"
-                    subtitle="Master React JS & Next JS"
-                    thumbnail="/assets/images/courses/course_1.png"
+                    title={course?.title}
+                    subtitle={course?.subtitle}
+                    thumbnail={course?.thumbnail}
                 />
             </div>
 
             <CourseDetails course={[]} />
 
             {/* Testimonials */}
-            <Testimonials testimonials={testimonials} />
+            <Testimonials testimonials={course?.testimonials} />
 
             {/* Releated Course */}
             <RelatedCourses />
