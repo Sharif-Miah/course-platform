@@ -32,13 +32,21 @@ interface CourseCurriculamProps {
 const CourseCurriculam = ({ course }: CourseCurriculamProps) => {
     const totalDuration = course?.modules?.reduce((acc: number, obj: ModuleType) => {
         const totalSeconds = obj.lessonIds?.reduce((lessonAcc: number, lesson: LessonType) => {
-            if (!lesson || !lesson.duration) return lessonAcc;
-            const parts = lesson.duration.split(":").map(Number);
-            if (parts.length === 2) {
-                return lessonAcc + parts[0] * 60 + parts[1];
-            } else if (parts.length === 3) {
-                return lessonAcc + parts[0] * 3600 + parts[1] * 60 + parts[2];
+            if (!lesson || lesson.duration == null) return lessonAcc;
+            
+            if (typeof lesson.duration === "number") {
+                return lessonAcc + lesson.duration;
             }
+            
+            if (typeof lesson.duration === "string") {
+                const parts = lesson.duration.split(":").map(Number);
+                if (parts.length === 2) {
+                    return lessonAcc + parts[0] * 60 + parts[1];
+                } else if (parts.length === 3) {
+                    return lessonAcc + parts[0] * 3600 + parts[1] * 60 + parts[2];
+                }
+            }
+            
             return lessonAcc;
         }, 0) || 0;
         return acc + (totalSeconds / 60); // minutes

@@ -6,6 +6,7 @@ import { Module } from "@/model/module.model";
 import { Lesson } from "@/model/lesson-model";
 import { dbConnect } from "@/service/mongo";
 import { replaceMongoIdInArray, replaceMongoIdInObject } from "@/lib/convertData";
+import { getEnrollmentsForCourse } from "./enrollments";
 
 export async function getCourseList(filters: {
     categories?: string[];
@@ -124,35 +125,71 @@ export async function getCourseDetails(id: string) {
     return replaceMongoIdInObject(course)
 }
 
-export async function getCourseDetailsByInstructor(instructorId: string) {
-    await dbConnect();
-    const courses = await Course.find({ instructor: instructorId })
-        .populate({
-            path: "testimonials",
-            model: Testimonial
+// export async function getCourseDetailsByInstructor(instructorId: string) {
+//     await dbConnect();
+//     const courses = await Course.find({ instructor: instructorId })
+//         .populate({
+//             path: "testimonials",
+//             model: Testimonial
+//         })
+//         .lean();
+
+//     const coursesCount = courses.length;
+//     let enrollmentsCount = 0;
+//     let reviewsCount = 0;
+//     let totalRating = 0;
+
+//     courses.forEach(course => {
+//         if (course.testimonials) {
+//             reviewsCount += course.testimonials.length;
+//             course.testimonials.forEach((t: any) => {
+//                 totalRating += t.rating || 0;
+//             });
+//         }
+//     });
+
+//     const averageRating = reviewsCount > 0 ? Number((totalRating / reviewsCount).toFixed(1)) : 0;
+
+//     return {
+//         courses: coursesCount,
+//         enrollments: enrollmentsCount,
+//         reviews: reviewsCount,
+//         ratings: averageRating
+//     };
+// }
+
+export async function getCourseDetailsByInstructor(instructorId) {
+    const courses = await Course.find({ instructor: instructorId }).lean();
+
+    const enrollments = await Promise.all(
+        courses.map(async (course) => {
+            const enrollment = await getEnrollmentsForCourse(course._id.toString());
+            return enrollment;
         })
-        .lean();
+    );
 
-    const coursesCount = courses.length;
-    let enrollmentsCount = 0;
-    let reviewsCount = 0;
-    let totalRating = 0;
-
-    courses.forEach(course => {
-        if (course.testimonials) {
-            reviewsCount += course.testimonials.length;
-            course.testimonials.forEach((t: any) => {
-                totalRating += t.rating || 0;
-            });
-        }
+    const totalEnrollments = enrollments.reduce((item, currentValue) => {
+        return item.length + currentValue.length;
     });
 
-    const averageRating = reviewsCount > 0 ? Number((totalRating / reviewsCount).toFixed(1)) : 0;
+    const testimonials = await Promise.all(
+        courses.map(async (course) => {
+            const testimonial = await getTestimonialsForCourse(course._id.toString());
+            return testimonial;
+        })
+    );
+
+    const totalTestimonials = testimonials.flat();
+    const avgRating = (totalTestimonials.reduce(function (acc, obj) {
+        return acc + obj.rating;
+    }, 0)) / totalTestimonials.length;
+
+    //console.log("testimonials", totalTestimonials, avgRating);
 
     return {
-        courses: coursesCount,
-        enrollments: enrollmentsCount,
-        reviews: reviewsCount,
-        ratings: averageRating
-    };
+        "courses": courses.length,
+        "enrollments": totalEnrollments,
+        "reviews": totalTestimonials.length,
+        "ratings": avgRating.toPrecision(2)
+    }
 }

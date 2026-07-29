@@ -45,9 +45,9 @@ const CourseModuleList = ({ module }: CourseModuleListProps) => {
                             key={lesson.id}
                             className="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:bg-gray-50 dark:hover:bg-zinc-800 transition"
                         >
-                            <div className="flex items-center gap-2">
-                                <Video className="w-4 h-4 text-gray-500" />
-                                <div>
+                            <div className="flex items-start gap-3">
+                                <Video className="w-4 h-4 text-gray-500 shrink-0 mt-0.5" />
+                                <div className="flex flex-col gap-0.5">
                                     <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
                                         {lesson.title}
                                     </p>
@@ -57,7 +57,11 @@ const CourseModuleList = ({ module }: CourseModuleListProps) => {
                                 </div>
                             </div>
                             <div className="flex items-center gap-2 text-xs text-gray-500">
-                                <span>{lesson.duration}</span>
+                                <span>
+                                    {typeof lesson.duration === "number"
+                                        ? `${Math.floor(lesson.duration / 60).toString().padStart(2, "0")}:${(lesson.duration % 60).toString().padStart(2, "0")}`
+                                        : lesson.duration}
+                                </span>
                                 {lesson.access !== "public" && (
                                     <Lock className="w-3.5 h-3.5 text-gray-400" />
                                 )}
