@@ -7,6 +7,7 @@ import { Lesson } from "@/model/lesson-model";
 import { dbConnect } from "@/service/mongo";
 import { replaceMongoIdInArray, replaceMongoIdInObject } from "@/lib/convertData";
 import { getEnrollmentsForCourse } from "./enrollments";
+import { getTestimonialsForCourse } from "./testimonials";
 
 export async function getCourseList(filters: {
     categories?: string[];
@@ -158,7 +159,7 @@ export async function getCourseDetails(id: string) {
 //     };
 // }
 
-export async function getCourseDetailsByInstructor(instructorId) {
+export async function getCourseDetailsByInstructor(instructorId: string) {
     const courses = await Course.find({ instructor: instructorId }).lean();
 
     const enrollments = await Promise.all(
@@ -169,8 +170,8 @@ export async function getCourseDetailsByInstructor(instructorId) {
     );
 
     const totalEnrollments = enrollments.reduce((item, currentValue) => {
-        return item.length + currentValue.length;
-    });
+        return item + currentValue.length;
+    }, 0);
 
     const testimonials = await Promise.all(
         courses.map(async (course) => {
@@ -180,9 +181,11 @@ export async function getCourseDetailsByInstructor(instructorId) {
     );
 
     const totalTestimonials = testimonials.flat();
-    const avgRating = (totalTestimonials.reduce(function (acc, obj) {
-        return acc + obj.rating;
-    }, 0)) / totalTestimonials.length;
+    const avgRating = totalTestimonials.length > 0 
+        ? totalTestimonials.reduce(function (acc, obj) {
+            return acc + obj.rating;
+        }, 0) / totalTestimonials.length 
+        : 0;
 
     //console.log("testimonials", totalTestimonials, avgRating);
 

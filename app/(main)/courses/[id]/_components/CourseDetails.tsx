@@ -72,7 +72,7 @@ const CourseDetails = ({ course }: CourseDetailsProps) => {
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                         <span className="text-success font-semibold">Last Updated: </span>
-                        <span>{new Date(course?.modifiedOn).toLocaleDateString("en-US", {
+                        <span suppressHydrationWarning>{new Date(course?.modifiedOn).toLocaleDateString("en-US", {
                             month: "short",
                             day: "numeric",
                             year: "numeric",
